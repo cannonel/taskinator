@@ -46,9 +46,6 @@ var createTaskEl = function (taskDataObj) {
   listItemEl.className = "task-item";
   listItemEl.setAttribute("data-task-id", taskIdCounter);
 
-  //console log
-  console.log(taskDataObj);
-  console.log(taskDataObj.status);
 
   // create div to hold task info and add to list item
   var taskInfoEl = document.createElement("div");
@@ -63,6 +60,9 @@ var createTaskEl = function (taskDataObj) {
 
   taskDataObj.id = taskIdCounter;
   tasks.push(taskDataObj);
+
+  //save task function
+  localStorage.setItem("tasks", tasks);
 
   //create task actions (buttons and select) for task
   var taskActionsEl = createTaskActions(taskIdCounter);
@@ -124,6 +124,8 @@ var completeEditTask = function(taskName, taskType, taskId) {
       tasks[i].name = taskName;
       tasks[i].type = taskType;
     }
+
+    localStorage.setItem("tasks", tasks);
   };
 
   alert("Task Updated!");
@@ -169,7 +171,9 @@ var taskStatusChangeHandler = function(event) {
       tasks[i].status = statusValue;
     }
   }
-  console.log(tasks);
+ 
+
+  localStorage.setItem("tasks", tasks);
 };
 
 var editTask = function (taskId) {
@@ -199,7 +203,25 @@ var deleteTask = function (taskId) {
     ".task-item[data-task-id='" + taskId + "']"
   );
   taskSelected.remove();
+
+  //create new array to hold updated list of tasks
+  var updatedTaskArr = [];
+  //loop through current tasks
+  for (var i=0; i < tasks.length; i++) {
+    //if tasks[i].id doesnt match the value of taskId, keep task
+    if (tasks[i].id !== parseInt(taskId)) {
+      updatedTaskArr.push(tasks[i]);
+    }
+  }
+  //reassign tasks array to be the same as updatedTaskArr
+  tasks = updatedTaskArr;
+
+  localStorage.setItem("tasks", tasks);
 };
+
+var saveTasks = function(){
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 
 formEl.addEventListener("submit", taskFormHandler);
 
